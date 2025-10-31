@@ -1,0 +1,20 @@
+steps:
+  - label: ":docker: Build image and deploy to Kind"
+    command:
+      - "echo '--- Building Docker image'"
+      - "docker build -t hello:latest ."
+
+      - "echo '--- Loading image into Kind cluster'"
+      - "kind load docker-image hello:latest --name kind"
+
+      - "echo '--- Deploying manifests to Kind'"
+      - "kubectl apply -f k8s/deployment.yaml"
+      - "kubectl apply -f k8s/service.yaml"
+
+      - "echo '--- Waiting for pod ready'"
+      - "kubectl rollout status deploy/hello --timeout=60s"
+
+      - "echo '--- Port-forward and test the app'"
+      - "kubectl port-forward svc/hello 8080:80 &"
+      - "sleep 3"
+      - "curl -s http://localhost:8080"
