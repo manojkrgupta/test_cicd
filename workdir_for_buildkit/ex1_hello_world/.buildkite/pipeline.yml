@@ -20,12 +20,7 @@ steps:
       chmod +x chainctl
       token=$(buildkite-agent oidc request-token --audience issuer.enforce.dev)
       echo $token
-
-  - label: ":package: test cgr image download"    
-    key: "test-cgr"
-    depends_on: ["get-token"]
-    command: |
-      cd workdir_for_buildkit/ex1_hello_world # NOTE1001: using cd in every step    
+      #cd workdir_for_buildkit/ex1_hello_world # NOTE1001: using cd in every step    
       echo $token
       ./chainctl auth login --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
       echo yahooooooooo
