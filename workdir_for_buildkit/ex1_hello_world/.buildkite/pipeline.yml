@@ -25,8 +25,11 @@ steps:
     key: "test-cgr"
     depends_on: ["get-token"]
     command: |
+      cd workdir_for_buildkit/ex1_hello_world # NOTE1001: using cd in every step    
       echo $token
       ./chainctl auth login --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+      echo yahooooooooo
       ./chainctl auth configure-docker --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+      echo yahooooooooo
       ./chainctl images repos list
       docker pull cgr.dev/manojgupta.in/python:latest
