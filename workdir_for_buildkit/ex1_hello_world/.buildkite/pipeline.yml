@@ -15,11 +15,11 @@ steps:
     key: "test-cgr"
     depends_on: ["build"]
     command: |
-  cd workdir_for_buildkit/ex1_hello_world # NOTE1001: using cd in every step    
-  curl -o chainctl "https://dl.enforce.dev/chainctl/latest/chainctl_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m)"
-  chmod +x chainctl
-  token=$(buildkite-agent oidc request-token --audience issuer.enforce.dev)
-  ./chainctl auth login --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
-  ./chainctl auth configure-docker --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
-  ./chainctl images repos list
-  docker pull cgr.dev/manojgupta.in/python:latest
+      cd workdir_for_buildkit/ex1_hello_world # NOTE1001: using cd in every step    
+      curl -o chainctl "https://dl.enforce.dev/chainctl/latest/chainctl_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m)"
+      chmod +x chainctl
+      token=$(buildkite-agent oidc request-token --audience issuer.enforce.dev)
+      ./chainctl auth login --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+      ./chainctl auth configure-docker --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+      ./chainctl images repos list
+      docker pull cgr.dev/manojgupta.in/python:latest
