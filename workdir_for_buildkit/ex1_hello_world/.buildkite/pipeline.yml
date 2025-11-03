@@ -1,5 +1,9 @@
+env:
+  BUILDKITE_BUILD_PATH: "workdir_for_buildkit/ex1_hello_world"
+
 steps:
   - label: ":docker: Build image and deploy to Kind"
+    working_dir: "workdir_for_buildkit/ex1_hello_world" # the work directory
     command:
       - "echo '--- Building Docker image'"
       - "docker build -t hello:latest ."
