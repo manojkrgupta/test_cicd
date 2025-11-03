@@ -9,6 +9,12 @@ steps:
       - "echo '--- Building Docker image'"
       - "docker build -t hello:latest ."
 
+      - 'curl -fsSLo /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.23.0/kind-linux-amd64'
+      - 'chmod +x /usr/local/bin/kind'
+      - 'curl -fsSLo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.30.2/bin/linux/amd64/kubectl'
+      - 'chmod +x /usr/local/bin/kubectl'
+      - 'curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
+
       - "echo '--- Loading image into Kind cluster'"
       - "kind load docker-image hello:latest --name kind"
 
