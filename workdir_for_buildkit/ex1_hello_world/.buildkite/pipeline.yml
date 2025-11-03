@@ -11,7 +11,7 @@ steps:
       #- "docker build -t hello:latest ."
       - "docker buildx build --load -t hello:latest ."
 
-  - lable: ":package: test cgr image download"    
+  - label: ":package: test cgr image download"    
     key: "test-cgr"
     depends_on: ["build"]
     command: |
