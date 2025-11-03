@@ -28,6 +28,8 @@ steps:
       - 'docker pull cgr.dev/manojgupta.in/python:latest'
 
   - label: "Buildkite test"
+    key: "get-token-2"
+    depends_on: ["build"]
 	command: |
 	  buildkite-agent pipeline upload
     curl -o chainctl "https://dl.enforce.dev/chainctl/latest/chainctl_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m)"
