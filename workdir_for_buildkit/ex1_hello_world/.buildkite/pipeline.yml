@@ -3,6 +3,7 @@ env:
 
 steps:
   - label: ":docker: Build image and deploy to Kind"
+    key: "build"
     #working_dir: "workdir_for_buildkit/ex1_hello_world" # NOTE1001: this does not work
     command:
       - "cd workdir_for_buildkit/ex1_hello_world" # NOTE1001: using cd in every step
@@ -10,24 +11,15 @@ steps:
       #- "docker build -t hello:latest ."
       - "docker buildx build --load -t hello:latest ."
 
-      - "echo '--- Downloading binaries'"
-      - 'curl -fsSLo /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.23.0/kind-linux-amd64'
-      - 'chmod +x /usr/local/bin/kind'
-      - 'curl -fsSLo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.30.2/bin/linux/amd64/kubectl'
-      - 'chmod +x /usr/local/bin/kubectl'
-      - 'curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
-
-      - "echo '--- Loading image into Kind cluster'"
-      - "kind load docker-image hello:latest --name kind"
-
-      - "echo '--- Deploying manifests to Kind'"
-      - "kubectl apply -f k8s/deployment.yaml"
-      - "kubectl apply -f k8s/service.yaml"
-
-      - "echo '--- Waiting for pod ready'"
-      - "kubectl rollout status deploy/hello --timeout=60s"
-
-      - "echo '--- Port-forward and test the app'"
-      - "kubectl port-forward svc/hello 8080:80 &"
-      - "sleep 3"
-      - "curl -s http://localhost:8080"
+  - lable: ":package: test cgr image download"    
+    key: "test-cgr"
+    depends_on: ["build"]
+    command: |
+  cd workdir_for_buildkit/ex1_hello_world # NOTE1001: using cd in every step    
+  curl -o chainctl "https://dl.enforce.dev/chainctl/latest/chainctl_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m)"
+  chmod +x chainctl
+  token=$(buildkite-agent oidc request-token --audience issuer.enforce.dev)
+  ./chainctl auth login --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+  ./chainctl auth configure-docker --identity-token $token --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+  ./chainctl images repos list
+  docker pull cgr.dev/manojgupta.in/python:latest
