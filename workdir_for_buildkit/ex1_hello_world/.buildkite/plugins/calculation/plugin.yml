@@ -1,0 +1,13 @@
+name: Math
+description: Do a simple calculation and export the result
+author: https://github.com/manojkrgupta
+requirements: [bash]
+configuration:
+  properties:
+    a: { type: number }
+    b: { type: number }
+    op:
+      type: string
+      enum: ["add","sub","mul","div"]
+  required: [a, b, op]
+  additionalProperties: false

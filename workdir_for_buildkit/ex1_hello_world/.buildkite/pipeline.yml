@@ -1,0 +1,11 @@
+steps:
+  - label: ":token: test cgr image download"    
+    plugins:
+      - "./workdir_for_buildkit/ex1_hello_world/.buildkite/plugins/cgrauth":
+          identity: "f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9"
+    key: "get-token"
+    command:
+      - 'set -x'
+      - 'echo "from steps"'
+      - 'chainctl images repos list'
+      - 'docker pull cgr.dev/manojgupta.in/python:latest'

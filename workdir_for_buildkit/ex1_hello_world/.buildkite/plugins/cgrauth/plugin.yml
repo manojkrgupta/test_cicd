@@ -1,0 +1,9 @@
+name: Auth
+description: Authenticate to pull images
+author: https://github.com/manojkrgupta
+requirements: [bash]
+configuration:
+  properties:
+    identity: { type: string }
+  required: [identity]
+  additionalProperties: false
