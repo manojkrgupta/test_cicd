@@ -13,4 +13,4 @@ chainctl auth login --identity-token $(cat token.txt) --identity f1d5337370e7d8e
 echo yahooooooooo
 chainctl auth configure-docker --identity-token $(cat token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
 echo yahooooooooo
-chainctl images repos list
+#chainctl images repos list
