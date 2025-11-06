@@ -2,6 +2,20 @@ env:
   BUILDKITE_BUILD_PATH: "workdir_for_buildkit/ex1_hello_world" # NOTE1001: this is ignored and does not work
 
 steps:
+  - label: "Compute"
+    plugins:
+      - ".buildkite/plugins/buildkite_plugin_calculation":
+          a: 6
+          b: 7
+          op: "mul"
+
+  - wait        
+
+  - label: "Use the result"
+    command: |
+      echo "Env var: $MATH_RESULT"
+      echo "Meta-data: $(buildkite-agent meta-data get math.result)"
+
   - label: ":docker: Build image and deploy to Kind"
     key: "build"
     #working_dir: "workdir_for_buildkit/ex1_hello_world" # NOTE1001: this does not work

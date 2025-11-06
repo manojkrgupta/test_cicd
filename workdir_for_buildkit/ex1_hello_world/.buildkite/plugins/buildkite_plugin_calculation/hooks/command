@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+A="${BUILDKITE_PLUGIN_MATH_A:?missing a}"
+B="${BUILDKITE_PLUGIN_MATH_B:?missing b}"
+OP="${BUILDKITE_PLUGIN_MATH_OP:?missing op}"
+
+calc() {
+  case "$OP" in
+    add) awk "BEGIN { printf \"%.10g\", $A + $B }" ;;
+    sub) awk "BEGIN { printf \"%.10g\", $A - $B }" ;;
+    mul) awk "BEGIN { printf \"%.10g\", $A * $B }" ;;
+    div) awk "BEGIN {
+      if ($B == 0) { print \"NaN\"; exit 0 } 
+      printf \"%.10g\", $A / $B
+    }" ;;
+  esac
+}
+
+RESULT="$(calc)"
+echo "--- :abacus: $A $OP $B = $RESULT"
+
+# 1) Export for subsequent phases of THIS job (command/post-command etc.)
+# Append to the job env file so the agent sources it next phase.
+# (BUILDKITE_ENV_FILE is provided by the agent)
+if [[ -n "${BUILDKITE_ENV_FILE:-}" ]]; then
+  echo "export MATH_RESULT=${RESULT}" >> "$BUILDKITE_ENV_FILE"
+fi
+
+# 2) Persist across STEPS using the meta-data store
+buildkite-agent meta-data set "math.result" "${RESULT}" >/dev/null 2>&1 || true

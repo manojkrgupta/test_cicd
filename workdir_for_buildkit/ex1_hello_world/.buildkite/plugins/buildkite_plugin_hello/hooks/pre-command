@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+GREETING="${BUILDKITE_PLUGIN_HELLO_GREETING:-Hello from the plugin 👋}"
+echo "--- :wave: ${GREETING}"

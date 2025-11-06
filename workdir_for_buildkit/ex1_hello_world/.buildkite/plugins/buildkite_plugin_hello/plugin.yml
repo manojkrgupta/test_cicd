@@ -1,0 +1,13 @@
+name: Hello
+description: Adds a greeting and optionally retries the step command
+author: https://github.com/manojkrgupta
+requirements: []            # e.g. ["bash"] if you want to enforce deps on agents
+configuration:
+  properties:
+    greeting:
+      type: string
+      default: "Hello from the plugin 👋"
+    retries:
+      type: integer
+      default: 0
+  additionalProperties: false

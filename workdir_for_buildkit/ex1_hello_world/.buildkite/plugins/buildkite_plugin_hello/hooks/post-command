@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+RETRIES="${BUILDKITE_PLUGIN_HELLO_RETRIES:-0}"
+
+if [[ "${RETRIES}" =~ ^[0-9]+$ ]]; then
+  buildkite-agent annotate "hello plugin ran with retries=${RETRIES}" --style "info" || true
+fi
