@@ -4,7 +4,7 @@ env:
 steps:
   - label: "Compute"
     plugins:
-      - "./workdir_for_buildkit/ex1_hello_world/.buildkite/plugins/buildkite_plugin_calculation":
+      - "./workdir_for_buildkit/ex1_hello_world/.buildkite/plugins/calculation":
           a: 6
           b: 7
           op: "mul"
