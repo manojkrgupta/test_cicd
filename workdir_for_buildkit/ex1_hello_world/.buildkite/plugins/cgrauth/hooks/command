@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+set -x
+
+identity="${BUILDKITE_PLUGIN_CGRAUTH_IDENTITY:?missing identity}"
+cd workdir_for_buildkit/ex1_hello_world
+curl -o chainctl https://dl.enforce.dev/chainctl/latest/chainctl_$(uname -s | tr "[:upper:]" "[:lower:]")_$(uname -m)
+chmod +x chainctl
+mv chainctl /usr/bin
+buildkite-agent oidc request-token --audience issuer.enforce.dev >token.txt
+cat token.txt|wc
+chainctl auth login --identity-token $(cat token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+echo yahooooooooo
+chainctl auth configure-docker --identity-token $(cat token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+echo yahooooooooo
+chainctl images repos list

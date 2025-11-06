@@ -1,44 +1,11 @@
-env:
-  BUILDKITE_BUILD_PATH: "workdir_for_buildkit/ex1_hello_world" # NOTE1001: this is ignored and does not work
-
 steps:
-  - label: "Compute"
-    plugins:
-      - "./workdir_for_buildkit/ex1_hello_world/.buildkite/plugins/calculation":
-          a: 6
-          b: 7
-          op: "mul"
-
-  - wait        
-
-  - label: "Use the result"
-    command: |
-      echo "Env var: $MATH_RESULT"
-      echo "Meta-data: $(buildkite-agent meta-data get math.result)"
-
-  - label: ":docker: Build image and deploy to Kind"
-    key: "build"
-    #working_dir: "workdir_for_buildkit/ex1_hello_world" # NOTE1001: this does not work
-    command:
-      - "cd workdir_for_buildkit/ex1_hello_world" # NOTE1001: using cd in every step
-      - "echo '--- Building Docker image'"
-      #- "docker build -t hello:latest ."
-      - "docker buildx build --load -t hello:latest ."
-
   - label: ":token: test cgr image download"    
+    plugins:
+      - "./workdir_for_buildkit/ex1_hello_world/.buildkite/plugins/cgrauth":
+          identity: "f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9"
     key: "get-token"
-    depends_on: ["build"]
     command:
       - 'set -x'
-      - 'cd workdir_for_buildkit/ex1_hello_world' # NOTE1001: using cd in every step    
-      - 'curl -o chainctl https://dl.enforce.dev/chainctl/latest/chainctl_$(uname -s | tr "[:upper:]" "[:lower:]")_$(uname -m)'
-      - 'chmod +x chainctl'
-      - 'mv chainctl /usr/bin'
-      - 'buildkite-agent oidc request-token --audience issuer.enforce.dev >token.txt'
-      - 'cat token.txt|wc'
-      - 'chainctl auth login --identity-token $(cat token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9'
-      - 'echo yahooooooooo'
-      - 'chainctl auth configure-docker --identity-token $(cat token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9'
-      - 'echo yahooooooooo'
+      - 'echo "from steps"'
       - 'chainctl images repos list'
       - 'docker pull cgr.dev/manojgupta.in/python:latest'
