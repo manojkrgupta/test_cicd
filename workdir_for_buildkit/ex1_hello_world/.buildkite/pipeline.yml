@@ -7,9 +7,9 @@ steps:
       chmod +x chainctl
       mv chainctl /usr/bin
       buildkite-agent oidc request-token --audience issuer.enforce.dev >.token.txt
-      chainctl auth login --identity-token $(cat .token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
-      chainctl auth configure-docker --identity-token $(cat .token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/e75cd07d96127bf9
+      chainctl auth login --identity-token $(cat .token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/332ddb0458b41067
+      chainctl auth configure-docker --identity-token $(cat .token.txt) --identity f1d5337370e7d8e99282c25286804a5b2cfc1682/332ddb0458b41067
       rm .token.txt
       chainctl images repos list
       #docker pull cgr.dev/<organization>/<repo>:<tag>
-      #docker pull cgr.dev/manojgupta.in/python:latest
+      docker pull cgr.dev/manojgupta.in/python:latest
