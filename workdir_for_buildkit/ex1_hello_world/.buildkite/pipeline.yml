@@ -12,4 +12,4 @@ steps:
       rm .token.txt
       chainctl images repos list
       #docker pull cgr.dev/<organization>/<repo>:<tag>
-      docker pull cgr.dev/manojgupta.in/python:latest
+      #docker pull cgr.dev/manojgupta.in/python:latest
