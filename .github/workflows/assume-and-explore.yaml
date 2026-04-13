@@ -1,0 +1,24 @@
+name: Assume and Explore
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  assume-and-explore:
+    name: actions assume example
+
+    permissions:
+      id-token: write
+
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: chainguard-dev/setup-chainctl@main
+      with:
+        identity: f1d5337370e7d8e99282c25286804a5b2cfc1682/a517747be7cd0805
+
+    - run: |
+        chainctl image repo list --parent=manojgupta.in
+
+    - run: |
+        docker pull cgr.dev/manojgupta.in/python:latest
