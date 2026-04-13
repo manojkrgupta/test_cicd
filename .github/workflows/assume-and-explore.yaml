@@ -15,7 +15,7 @@ jobs:
 
     - uses: chainguard-dev/setup-chainctl@main
       with:
-        identity: f1d5337370e7d8e99282c25286804a5b2cfc1682/a517747be7cd0805
+        identity: f1d5337370e7d8e99282c25286804a5b2cfc1682/2a0c09fba13ac4f5
 
     - run: |
         chainctl image repo list --parent=manojgupta.in
