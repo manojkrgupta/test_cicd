@@ -1,0 +1,72 @@
+name: Chainguard MCP assumable-identity test
+
+# Gate 2 for ZD12791: prove that an assumable identity can mint a token
+# that the Chainguard MCP servers accept. Uses GitHub's OIDC issuer as a
+# free stand-in for Amp's orb workload identity.
+
+on:
+  workflow_dispatch:        # run it by hand from the Actions tab
+
+permissions:
+  id-token: write           # REQUIRED - this is what injects the two
+                            # ACTIONS_ID_TOKEN_REQUEST_* variables
+  contents: read
+
+env:
+  CG_IDENTITY_UIDP: f1d5337370e7d8e99282c25286804a5b2cfc1682/bbb9b900ad0fb259
+  MCP_AUDIENCE: https://cgr.dev/mcp
+  OIDC_AUDIENCE: https://issuer.enforce.dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install chainctl
+        run: |
+          curl -o chainctl -sSfL \
+            "https://dl.enforce.dev/chainctl/latest/chainctl_linux_x86_64"
+          chmod +x chainctl
+          sudo mv chainctl /usr/local/bin/
+          chainctl version
+
+      - name: Mint a GitHub OIDC token
+        run: |
+          curl -sS \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${OIDC_AUDIENCE}" \
+            | jq -r '.value' > /tmp/oidc.jwt
+
+          echo "--- token claims (not the signature) ---"
+          jq -R 'split(".")[1] | @base64d | fromjson' < /tmp/oidc.jwt
+
+      - name: Exchange it for a Chainguard token
+        run: |
+          chainctl auth login \
+            --identity="$CG_IDENTITY_UIDP" \
+            --identity-token=/tmp/oidc.jwt \
+            --audience="$MCP_AUDIENCE"
+
+          chainctl auth token --audience="$MCP_AUDIENCE" > /tmp/cg.token
+          echo "got a token of ${#} bytes:"
+          wc -c < /tmp/cg.token
+
+      - name: Call the MCP server
+        run: |
+          TOKEN=$(cat /tmp/cg.token)
+
+          echo "--- with the token (expect HTTP 200) ---"
+          curl -sS -w '\nHTTP %{http_code}\n' -X POST "$MCP_AUDIENCE" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize",
+                 "params":{"protocolVersion":"2025-06-18","capabilities":{},
+                           "clientInfo":{"name":"zd12791-gate2","version":"0"}}}'
+
+          echo "--- without it (expect HTTP 401, as a control) ---"
+          curl -sS -w '\nHTTP %{http_code}\n' -X POST "$MCP_AUDIENCE" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize",
+                 "params":{"protocolVersion":"2025-06-18","capabilities":{},
+                           "clientInfo":{"name":"zd12791-gate2","version":"0"}}}'
